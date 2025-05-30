@@ -1,0 +1,51 @@
+{
+  "name": "moneroo-nodejs-sdk",
+  "version": "1.0.0",
+  "description": "Official Node.js SDK for Moneroo payment integration in Africa",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "jest",
+    "example:payment": "node examples/create-payment.js",
+    "example:status": "node examples/check-transaction.js",
+    "lint": "eslint .",
+    "prepublishOnly": "pnpm test && pnpm run lint",
+    "prepare": "pnpm run lint"
+  },
+  "keywords": [
+    "moneroo",
+    "payment",
+    "sdk",
+    "nodejs",
+    "mobile money",
+    "mtn",
+    "moov",
+    "africa",
+    "benin",
+    "fintech"
+  ],
+  "author": "Moneroo <hello@moneroo.io> (https://www.moneroo.io)",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.55.0",
+    "jest": "^29.7.0"
+  },
+  "engines": {
+    "node": ">=12.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Brandon22030/moneroo-nodejs-sdk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Brandon22030/moneroo-nodejs-sdk/issues"
+  },
+  "homepage": "https://github.com/Brandon22030/moneroo-nodejs-sdk#readme",
+  "files": [
+    "src/",
+    "LICENSE",
+    "README.md"
+  ]
+}
