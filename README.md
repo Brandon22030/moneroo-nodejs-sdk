@@ -38,7 +38,7 @@ Create a `.env` file at the root of your project and add your Moneroo API key:
 MONEROO_API_KEY=your_api_key
 ```
 
-You can obtain your API key from the [Moneroo Dashboard](https://dashboard.moneroo.io).
+You can obtain your API key from the Moneroo Dashboard.
 
 ## Quick Start
 
