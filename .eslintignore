@@ -1,0 +1,8 @@
+# Ignore generated files in dist directory
+dist/
+
+# Ignore node_modules
+node_modules/
+
+# Ignore coverage directory
+coverage/

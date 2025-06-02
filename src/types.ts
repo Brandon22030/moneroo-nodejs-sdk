@@ -1,10 +1,12 @@
+import type { PaymentMethod } from './methods';
+
 /**
  * Parameters for initiating a payment
  */
 export interface PaymentInitParams {
   /** Payment amount (in cents) */
   amount: number;
-  /** Payment currency (e.g. XOF) */
+  /** Payment currency (e.g. 'XOF') */
   currency: string;
   /** Payment description */
   description: string;
@@ -16,8 +18,16 @@ export interface PaymentInitParams {
   lastName: string;
   /** Return URL after payment */
   returnUrl: string;
-  /** Accepted payment methods (e.g. ['mtn_bj']) */
-  methods?: string[];
+  /** 
+   * Specific payment method to use (optional)
+   * If not provided, the customer will be able to choose from available methods
+   */
+  paymentMethod?: PaymentMethod;
+  /** 
+   * List of accepted payment methods (deprecated, use paymentMethod instead)
+   * @deprecated Use paymentMethod instead for better type safety
+   */
+  methods?: PaymentMethod[];
 }
 
 /**
@@ -58,6 +68,10 @@ export interface TransactionStatus {
     id: string;
     /** Transaction status (e.g. 'completed', 'pending', 'failed') */
     status: string;
+    /** Payment method used for the transaction */
+    payment_method?: string;
+    /** Payment method code (enum value) */
+    paymentMethod?: PaymentMethod;
     /** Transaction amount */
     amount: string;
     /** Transaction currency */

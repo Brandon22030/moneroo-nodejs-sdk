@@ -10,12 +10,35 @@
 
 import initiatePayment from './payment';
 import checkTransactionStatus from './transaction';
+import { PaymentMethods, PaymentMethodUtils } from './methods';
+import type { PaymentMethod, PaymentMethodDetails } from './methods';
 
-// Export types
+// Re-export types and interfaces
 export * from './types';
 
-// Export functions
-export {
+// Export core functions
+export { initiatePayment, checkTransactionStatus };
+
+// Re-export payment methods and types
+export type { PaymentMethod, PaymentMethodDetails };
+export { PaymentMethods, PaymentMethodUtils };
+
+// Create default export with all functionality
+const monerooSdk = {
+  // Core functions
   initiatePayment,
-  checkTransactionStatus
+  checkTransactionStatus,
+  
+  // Payment methods and utilities
+  PaymentMethods,
+  PaymentMethodUtils,
+  
+  // Aliases for backward compatibility
+  methods: PaymentMethods,
+  getPaymentMethodDetails: PaymentMethodUtils.getDetails,
+  getPaymentMethods: PaymentMethodUtils.getAll,
+  getPaymentMethodsByCountry: PaymentMethodUtils.getByCountry,
+  getPaymentMethodsByCurrency: PaymentMethodUtils.getByCurrency
 };
+
+export default monerooSdk;

@@ -199,7 +199,9 @@ async function main() {
       updated_at,
       processed_at,
       return_url,
-      checkout_url
+      checkout_url,
+      paymentMethod,
+      payment_method
     } = status.data;
     
     // Format customer name
@@ -243,6 +245,10 @@ async function main() {
     if (environment) {
       // eslint-disable-next-line no-console
       console.log(`   Environment:     ${String(environment).toUpperCase()}`);
+    }
+    if (paymentMethod || payment_method) {
+      // eslint-disable-next-line no-console
+      console.log(`   Payment Method:  ${paymentMethod || payment_method}`);
     }
     
     // Timestamps

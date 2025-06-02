@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 import * as dotenv from 'dotenv';
 import { initiatePayment, checkTransactionStatus } from '../src';
+import { PaymentMethod } from '../src/methods';
 
 // Charger les variables d'environnement
 dotenv.config();
@@ -31,7 +32,8 @@ const paymentParams = {
   firstName: 'Customer',
   lastName: 'Test',
   returnUrl: 'https://example.com/callback',
-  methods: ['mtn_bj', 'moov_bj']
+  // Utilisation de l'énumération PaymentMethod pour spécifier une méthode de paiement
+  paymentMethod: PaymentMethod.MtnBJ
 };
 
 // Fonction principale asynchrone

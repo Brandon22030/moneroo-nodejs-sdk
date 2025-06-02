@@ -1,4 +1,5 @@
 import { PaymentInitParams, PaymentResponse } from './types';
+import { PaymentMethods } from './methods';
 
 /**
  * Initialize a payment with Moneroo and return the payment details
@@ -18,7 +19,16 @@ import { PaymentInitParams, PaymentResponse } from './types';
  *   firstName: 'John',
  *   lastName: 'Doe',
  *   returnUrl: 'https://example.com/return',
- *   methods: ['mtn_bj']
+ *   paymentMethod: 'mtn_bj' // Utilisation d'une valeur de l'énumération PaymentMethod
+ * }, 'your_secret_key');
+ * 
+ * @example
+ * // Utilisation avec une méthode de paiement spécifique via l'énumération
+ * import { PaymentMethod } from 'moneroo-nodejs-sdk';
+ * 
+ * const payment = await initiatePayment({
+ *   // ... autres paramètres
+ *   paymentMethod: PaymentMethod.MtnBJ // Utilisation de l'énumération
  * }, 'your_secret_key');
  */
 async function initiatePayment(
@@ -29,6 +39,16 @@ async function initiatePayment(
   if (!secretKey) {
     throw new Error('A Moneroo API key is required');
   }
+
+  // Valider la méthode de paiement si elle est fournie
+  if (params.paymentMethod && !(params.paymentMethod in PaymentMethods)) {
+    throw new Error(`Invalid payment method: ${params.paymentMethod}`);
+  }
+
+  // Préparer les méthodes de paiement pour l'API
+  const methods = params.paymentMethod 
+    ? [params.paymentMethod]
+    : params.methods || [];
 
   try {
     const response = await fetch(`${baseUrl}/payments/initialize`, {
@@ -48,7 +68,7 @@ async function initiatePayment(
           last_name: params.lastName
         },
         return_url: params.returnUrl,
-        methods: params.methods || ['mtn_bj']
+        methods: methods.length > 0 ? methods : undefined
       })
     });
 

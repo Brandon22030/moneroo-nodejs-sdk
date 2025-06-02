@@ -9,6 +9,7 @@
     "test": "jest",
     "example:payment": "ts-node examples/create-payment.ts",
     "example:status": "ts-node examples/check-transaction.ts",
+    "example:methods": "ts-node examples/payment-methods.ts",
     "lint": "eslint . --ext .ts",
     "prepublishOnly": "pnpm run build && pnpm test && pnpm run lint",
     "prepare": "pnpm run build && pnpm run lint"
