@@ -11,143 +11,171 @@ A lightweight Node.js SDK for integrating with the [Moneroo](https://moneroo.io)
 - Check transaction status
 - Lightweight with minimal dependencies
 - Promise-based API with async/await support
-- Comprehensive error handling
-
 ## Installation
 
-### Using npm
-```bash
-npm install moneroo-nodejs-sdk
-```
-
 ### Using pnpm (recommended)
+
 ```bash
 pnpm add moneroo-nodejs-sdk
 ```
 
-## Requirements
+### Using npm
 
-- Node.js 12.0.0 or higher
-- A Moneroo account and API key
-
-## Configuration
-
-Create a `.env` file at the root of your project and add your Moneroo API key:
-
-```
-MONEROO_API_KEY=your_api_key
+```bash
+npm install moneroo-nodejs-sdk
 ```
 
-You can obtain your API key from the Moneroo Dashboard.
+## Usage
 
-## Quick Start
+### Initialize a Payment
+
+```typescript
+import { initiatePayment, PaymentInitParams } from 'moneroo-nodejs-sdk';
+
+// Your Moneroo API key
+const apiKey = 'your_moneroo_api_key';
+
+// Payment parameters
+const paymentParams: PaymentInitParams = {
+  amount: 1000, // 10.00 XOF
+  currency: 'XOF',
+  description: 'Payment for order #123',
+  email: 'customer@example.com',
+  firstName: 'John',
+  lastName: 'Doe',
+  returnUrl: 'https://example.com/return',
+  methods: ['mtn_bj'] // Optional, defaults to ['mtn_bj']
+};
+
+// Initialize payment
+initiatePayment(paymentParams, apiKey)
+  .then(response => {
+    console.log('Payment initialized:', response);
+    console.log('Checkout URL:', response.data.checkout_url);
+    console.log('Transaction ID:', response.data.id);
+  })
+  .catch(error => {
+    console.error('Error initializing payment:', error.message);
+  });
+```
+
+### Using CommonJS
 
 ```javascript
-const { initiatePayment, checkTransactionStatus } = require('moneroo-nodejs-sdk');
-require('dotenv').config();
+const { initiatePayment } = require('moneroo-nodejs-sdk');
 
-// Initialize a payment
-async function createPayment() {
-  try {
-    const payment = await initiatePayment({
-      amount: 1000, // Amount in cents (10.00)
-      currency: 'XOF',
-      description: 'Test payment',
-      email: 'customer@example.com',
-      firstName: 'Customer',
-      lastName: 'Test',
-      returnUrl: 'https://example.com/callback',
-      methods: ['mtn_bj', 'moov_bj'] // Accepted payment methods
-    }, process.env.MONEROO_API_KEY);
-    
-    console.log('Payment URL:', payment.data.checkout_url);
-    console.log('Transaction ID:', payment.data.id);
-    return payment;
-  } catch (error) {
-    console.error('Error initializing payment:', error.message);
-    throw error;
-  }
-}
+// Your Moneroo API key
+const apiKey = 'your_moneroo_api_key';
+
+// Payment parameters (same as above)
+// ...
+
+// Initialize payment
+initiatePayment(paymentParams, apiKey)
+  .then(response => {
+    // ...
+  });
+```
+
+### Check Transaction Status
+
+```typescript
+import { checkTransactionStatus } from 'moneroo-nodejs-sdk';
+
+// Your Moneroo API key
+const apiKey = 'your_moneroo_api_key';
+
+// Transaction ID to check
+const transactionId = 'transaction_id_from_payment_initialization';
 
 // Check transaction status
-async function checkStatus(transactionId) {
-  try {
-    const status = await checkTransactionStatus(
-      transactionId,
-      process.env.MONEROO_API_KEY
-    );
-    
-    console.log('Transaction status:', status.data.status);
-    return status;
-  } catch (error) {
+checkTransactionStatus(transactionId, apiKey)
+  .then(response => {
+    console.log('Transaction status:', response);
+    console.log('Status:', response.data.status);
+  })
+  .catch(error => {
     console.error('Error checking transaction status:', error.message);
-    throw error;
-  }
-}
+  });
 ```
 
 ## API Reference
 
 ### initiatePayment(params, secretKey, [baseUrl])
 
-Initializes a payment and returns the payment details, including a checkout URL.
+Initializes a payment with Moneroo.
 
 **Parameters:**
 
-- `params` (Object): Payment parameters
-  - `amount` (Number): Payment amount in cents (e.g., 1000 for 10.00)
-  - `currency` (String): Payment currency (e.g., 'XOF')
-  - `description` (String): Payment description
-  - `email` (String): Customer email
-  - `firstName` (String): Customer first name
-  - `lastName` (String): Customer last name
-  - `returnUrl` (String): URL to redirect to after payment
-  - `methods` (Array, optional): Accepted payment methods (e.g., ['mtn_bj', 'moov_bj'])
-- `secretKey` (String): Moneroo secret API key
-- `baseUrl` (String, optional): Moneroo API base URL (default: 'https://api.moneroo.io/v1')
+- `params` (PaymentInitParams): Payment parameters
+  - `amount` (number): Payment amount (in cents)
+  - `currency` (string): Payment currency (e.g. XOF)
+  - `description` (string): Payment description
+  - `email` (string): Customer email
+  - `firstName` (string): Customer first name
+  - `lastName` (string): Customer last name
+  - `returnUrl` (string): Return URL after payment
+  - `methods` (string[]): Optional. Accepted payment methods (e.g. ['mtn_bj'])
+- `secretKey` (string): Moneroo secret API key
+- `baseUrl` (string): Optional. Moneroo API base URL (default: 'https://api.moneroo.io/v1')
 
-**Returns:**
-
-A Promise that resolves to the payment response object:
-
-```javascript
-{
-  message: "Transaction initialized successfully",
-  data: {
-    id: "py_xxxxxxxx",
-    checkout_url: "https://checkout.moneroo.io/py_xxxxxxxx"
-  },
-  errors: null
-}
-```
+**Returns:** Promise<PaymentResponse> that resolves to the payment response object.
 
 ### checkTransactionStatus(transactionId, secretKey, [baseUrl])
 
-Checks the status of a transaction.
+Checks the status of a Moneroo transaction.
 
 **Parameters:**
 
-- `transactionId` (String): Transaction ID
-- `secretKey` (String): Moneroo secret API key
-- `baseUrl` (String, optional): Moneroo API base URL (default: 'https://api.moneroo.io/v1')
+- `transactionId` (string): Transaction ID
+- `secretKey` (string): Moneroo secret API key
+- `baseUrl` (string): Optional. Moneroo API base URL (default: 'https://api.moneroo.io/v1')
 
-**Returns:**
+**Returns:** Promise<TransactionStatus> that resolves to the transaction status object.
 
-A Promise that resolves to the transaction status response object:
+## Development
 
-```javascript
-{
-  message: "Transaction fetched successfully",
-  data: {
-    id: "py_xxxxxxxx",
-    amount: 1000,
-    currency: "XOF",
-    status: "success", // or "pending", "failed", "cancelled"
-    // other transaction details
-  },
-  errors: null
-}
+### Setup
+
+1. Clone the repository
+2. Install dependencies with pnpm: `pnpm install`
+3. Create a `.env` file at the root of the project with your Moneroo API key:
+
 ```
+MONEROO_API_KEY=your_moneroo_api_key
+```
+
+### Building the SDK
+
+```bash
+pnpm run build
+```
+
+### Running Examples
+
+```bash
+# Initialize a payment
+pnpm run example:payment
+
+# Check transaction status
+pnpm run example:status <transaction_id>
+```
+
+### Running Tests
+
+```bash
+pnpm test
+```
+
+### Linting
+
+```bash
+pnpm run lint
+```
+
+## License
+
+MIT
 
 ## Error Handling
 
@@ -155,7 +183,7 @@ All functions in this SDK return Promises, so you can use try/catch blocks or .c
 
 ```javascript
 try {
-  const payment = await initiatePayment(params, apiKey);
+  // ...
   // Handle successful payment initialization
 } catch (error) {
   // Handle error

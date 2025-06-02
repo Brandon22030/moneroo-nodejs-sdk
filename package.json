@@ -1,15 +1,17 @@
 {
   "name": "moneroo-nodejs-sdk",
-  "version": "1.0.1",
+  "version": "1.0.0",
   "description": "Official Node.js SDK for Moneroo payment integration in Africa",
-  "main": "src/index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
+    "build": "tsc",
     "test": "jest",
-    "example:payment": "node examples/create-payment.js",
-    "example:status": "node examples/check-transaction.js",
-    "lint": "eslint .",
-    "prepublishOnly": "pnpm test && pnpm run lint",
-    "prepare": "pnpm run lint"
+    "example:payment": "ts-node examples/create-payment.ts",
+    "example:status": "ts-node examples/check-transaction.ts",
+    "lint": "eslint . --ext .ts",
+    "prepublishOnly": "pnpm run build && pnpm test && pnpm run lint",
+    "prepare": "pnpm run build && pnpm run lint"
   },
   "keywords": [
     "moneroo",
@@ -29,11 +31,18 @@
     "dotenv": "^16.3.1"
   },
   "devDependencies": {
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.11.30",
+    "@typescript-eslint/eslint-plugin": "^7.3.1",
+    "@typescript-eslint/parser": "^7.3.1",
     "eslint": "^8.55.0",
-    "jest": "^29.7.0"
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.2"
   },
   "engines": {
-    "node": ">=12.0.0"
+    "node": ">=14.0.0"
   },
   "repository": {
     "type": "git",
@@ -44,7 +53,7 @@
   },
   "homepage": "https://github.com/Brandon22030/moneroo-nodejs-sdk#readme",
   "files": [
-    "src/",
+    "dist/",
     "LICENSE",
     "README.md"
   ]

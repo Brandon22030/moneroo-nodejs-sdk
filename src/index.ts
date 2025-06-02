@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * Moneroo Node.js SDK
  * Official Node.js SDK for Moneroo payment integration in Africa
@@ -10,12 +8,14 @@
  * @module moneroo-nodejs-sdk
  */
 
-// Import modules
-const initiatePayment = require('./payment');
-const checkTransactionStatus = require('./transaction');
+import initiatePayment from './payment';
+import checkTransactionStatus from './transaction';
 
-// Re-export functions
-module.exports = {
+// Export types
+export * from './types';
+
+// Export functions
+export {
   initiatePayment,
   checkTransactionStatus
 };

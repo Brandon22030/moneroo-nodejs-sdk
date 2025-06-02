@@ -1,19 +1,23 @@
-'use strict';
+import { TransactionStatus } from './types';
 
 /**
  * Check the status of a Moneroo transaction
  * 
- * @param {string} transactionId - Transaction ID
- * @param {string} secretKey - Moneroo secret API key
- * @param {string} [baseUrl] - Moneroo API base URL (optional)
- * @returns {Promise<Object>} - Transaction status
+ * @param transactionId - Transaction ID
+ * @param secretKey - Moneroo secret API key
+ * @param baseUrl - Moneroo API base URL (optional)
+ * @returns Transaction status
  * 
  * @example
  * // Check transaction status
  * const status = await checkTransactionStatus('tx_123456789', 'your_secret_key');
  * console.log(status.data.status); // 'completed', 'pending', 'failed', etc.
  */
-async function checkTransactionStatus(transactionId, secretKey, baseUrl = 'https://api.moneroo.io/v1') {
+async function checkTransactionStatus(
+  transactionId: string, 
+  secretKey: string, 
+  baseUrl: string = 'https://api.moneroo.io/v1'
+): Promise<TransactionStatus> {
   if (!secretKey) {
     throw new Error('A Moneroo API key is required');
   }
@@ -32,11 +36,13 @@ async function checkTransactionStatus(transactionId, secretKey, baseUrl = 'https
       throw new Error(errorData?.message || `HTTP Error: ${response.status}`);
     }
 
-    return await response.json();
+    return await response.json() as TransactionStatus;
   } catch (error) {
-    console.error('❌ Error checking transaction status:', error.message);
-    throw error;
+    if (error instanceof Error) {
+      throw error;
+    }
+    throw new Error('Unknown error occurred');
   }
 }
 
-module.exports = checkTransactionStatus;
+export default checkTransactionStatus;
