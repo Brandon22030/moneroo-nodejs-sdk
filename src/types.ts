@@ -21,6 +21,15 @@ export interface PaymentInitParams {
 }
 
 /**
+ * Interface for error responses
+ */
+interface ApiError {
+  [key: string]: string | string[] | { [key: string]: string } | undefined;
+  message?: string;
+  code?: string;
+}
+
+/**
  * Response from payment initialization
  */
 export interface PaymentResponse {
@@ -34,7 +43,7 @@ export interface PaymentResponse {
     checkout_url: string;
   };
   /** Errors if any */
-  errors?: any;
+  errors?: ApiError;
 }
 
 /**
@@ -65,5 +74,5 @@ export interface TransactionStatus {
     updated_at: string;
   };
   /** Errors if any */
-  errors?: any;
+  errors?: ApiError;
 }
