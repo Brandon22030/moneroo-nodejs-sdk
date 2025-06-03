@@ -147,36 +147,127 @@ try {
 }
 ```
 
-### Available Payment Methods
+### Payment Methods Guide
 
-The SDK includes a comprehensive list of supported payment methods through the `PaymentMethod` enum. Here are some examples:
+The SDK provides a comprehensive system for working with payment methods through the `PaymentMethod` enum and `PaymentMethodUtils` helper functions. This allows you to easily select and filter payment methods based on country, currency, or specific requirements.
+
+#### Using the PaymentMethod Enum
+
+The `PaymentMethod` enum provides type-safe access to all supported payment methods:
 
 ```typescript
-// Mobile Money
-PaymentMethod.MtnBJ  // MTN Mobile Money Benin
-PaymentMethod.MoovBJ // Moov Money Benin
-PaymentMethod.MpesaKE // M-Pesa Kenya
+import { PaymentMethod } from 'moneroo-nodejs-sdk';
 
-// Cards
-PaymentMethod.CardUSD // Card payments in USD
-PaymentMethod.CardXOF // Card payments in XOF
+// Specify a payment method in your payment parameters
+const params = {
+  // ... other payment parameters
+  paymentMethod: PaymentMethod.MtnBJ  // Use MTN Mobile Money Benin
+};
 
-// Crypto
-PaymentMethod.CryptoUSD // Cryptocurrency payments in USD
-
-// Bank Transfers
-PaymentMethod.BankTransferNG // Bank transfers in Nigeria
-
-// And many more...
+// Or specify multiple accepted methods
+const params = {
+  // ... other payment parameters
+  methods: [PaymentMethod.MtnBJ, PaymentMethod.MoovBJ]  // Accept both MTN and Moov in Benin
+};
 ```
 
-You can explore all available methods programmatically:
+#### Available Payment Method Categories
+
+##### Mobile Money Providers
+```typescript
+// MTN Mobile Money (available in multiple countries)
+PaymentMethod.MtnBJ  // Benin
+PaymentMethod.MtnCI  // Côte d'Ivoire
+PaymentMethod.MtnGH  // Ghana
+PaymentMethod.MtnNG  // Nigeria
+// ... and more
+
+// Orange Money
+PaymentMethod.OrangeBF  // Burkina Faso
+PaymentMethod.OrangeCI  // Côte d'Ivoire
+PaymentMethod.OrangeSN  // Senegal
+// ... and more
+
+// Moov Money
+PaymentMethod.MoovBJ  // Benin
+PaymentMethod.MoovCI  // Côte d'Ivoire
+PaymentMethod.MoovTG  // Togo
+// ... and more
+
+// M-Pesa
+PaymentMethod.MpesaKE  // Kenya
+PaymentMethod.MpesaTZ  // Tanzania
+
+// Airtel Money
+PaymentMethod.AirtelNG  // Nigeria
+PaymentMethod.AirtelUG  // Uganda
+// ... and more
+```
+
+##### Card Payments
+```typescript
+PaymentMethod.CardUSD  // USD cards
+PaymentMethod.CardXOF  // XOF cards (West African CFA franc)
+PaymentMethod.CardXAF  // XAF cards (Central African CFA franc)
+PaymentMethod.CardNGN  // NGN cards (Nigerian Naira)
+// ... and more regional card options
+```
+
+##### Cryptocurrency
+```typescript
+PaymentMethod.CryptoUSD  // USD crypto payments
+PaymentMethod.CryptoXOF  // XOF crypto payments
+PaymentMethod.CryptoNGN  // NGN crypto payments
+// ... and more
+```
+
+##### Other Payment Methods
+```typescript
+PaymentMethod.BankTransferNG  // Bank transfers in Nigeria
+PaymentMethod.QRNGN          // QR code payments in Nigeria
+PaymentMethod.USSDNGN        // USSD payments in Nigeria
+// ... and more
+```
+
+#### Filtering Payment Methods
+
+The SDK provides powerful utilities to filter payment methods based on various criteria:
 
 ```typescript
-// List all payment methods with their details
-PaymentMethodUtils.getAll().forEach(method => {
-  console.log(`${method.name} (${method.code}): ${method.currency}`);
-});
+import { PaymentMethodUtils } from 'moneroo-nodejs-sdk';
+
+// Get all available payment methods
+const allMethods = PaymentMethodUtils.getAll();
+
+// Filter by country (using ISO 3166-1 alpha-2 country codes)
+const methodsInNigeria = PaymentMethodUtils.getByCountry('NG');
+const methodsInBenin = PaymentMethodUtils.getByCountry('BJ');
+
+// Filter by currency (using ISO 4217 currency codes)
+const methodsForXOF = PaymentMethodUtils.getByCurrency('XOF');
+const methodsForNGN = PaymentMethodUtils.getByCurrency('NGN');
+
+// Get details for a specific payment method
+const mtnDetails = PaymentMethodUtils.getDetails(PaymentMethod.MtnBJ);
+console.log(mtnDetails);
+// Output: { name: 'MTN MoMo Benin', code: 'mtn_bj', currency: 'XOF', countries: ['BJ'] }
+```
+
+#### Payment Method Details
+
+Each payment method includes the following details:
+
+- `name`: Display name of the payment method
+- `code`: Unique identifier code (same as the PaymentMethod enum value)
+- `currency`: ISO 4217 currency code supported by this method
+- `countries`: Array of ISO 3166-1 alpha-2 country codes where this method is available
+
+```typescript
+// Example of accessing payment method details
+const methodDetails = PaymentMethodUtils.getDetails(PaymentMethod.MtnBJ);
+console.log(`Name: ${methodDetails.name}`);
+console.log(`Currency: ${methodDetails.currency}`);
+console.log(`Available in: ${methodDetails.countries.join(', ')}`);
 ```
 
 ## API Reference
@@ -273,10 +364,40 @@ try {
 
 ## Examples
 
-Check the `examples/` folder for complete usage examples:
+Le SDK inclut plusieurs exemples pratiques pour vous aider à comprendre et implémenter l'intégration Moneroo :
 
-- `examples/create-payment.js` - Example of initializing a payment
-- `examples/check-transaction.js` - Example of checking a transaction status
+### Exemples disponibles
+
+- **`examples/create-payment.ts`** - Exemple complet d'initialisation d'un paiement et de vérification de son statut
+  - Démontre le flux de paiement de bout en bout
+  - Utilise l'API Moneroo avec une clé API réelle
+  - Montre comment gérer les réponses et les erreurs
+  - **Utilisation** : Idéal lors de l'implémentation concrète de l'intégration Moneroo
+
+- **`examples/check-transaction.ts`** - Exemple de vérification du statut d'une transaction existante
+  - Montre comment suivre l'état d'un paiement après son initialisation
+  - **Utilisation** : Utile pour implémenter des webhooks ou des pages de confirmation
+
+- **`examples/payment-methods.ts`** - Outil de référence pour explorer les méthodes de paiement
+  - Liste toutes les méthodes de paiement disponibles (66+ méthodes)
+  - Démontre comment filtrer les méthodes par pays ou devise
+  - Montre comment obtenir les détails d'une méthode spécifique
+  - **Utilisation** : Idéal pendant la phase de planification pour comprendre quelles méthodes sont disponibles dans quels pays
+
+### Comment exécuter les exemples
+
+```bash
+# Initialiser un paiement
+pnpm run example:payment
+
+# Vérifier le statut d'une transaction
+pnpm run example:status <transaction_id>
+
+# Explorer les méthodes de paiement
+pnpm ts-node examples/payment-methods.ts
+```
+
+> **Note** : Assurez-vous d'avoir configuré votre clé API Moneroo dans un fichier `.env` avant d'exécuter les exemples.
 
 ## Development
 

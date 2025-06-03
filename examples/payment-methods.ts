@@ -132,6 +132,11 @@ async function initiateSamplePayment(): Promise<void> {
     const methodCode = PaymentMethod.MtnBJ;
     const details = PaymentMethodUtils.getDetails(methodCode);
     
+    if (!details) {
+      console.error(`❌ Payment method details not found for: ${methodCode}`);
+      return;
+    }
+    
     // eslint-disable-next-line no-console
     console.log(`Initiating ${details.name} payment...`);
     

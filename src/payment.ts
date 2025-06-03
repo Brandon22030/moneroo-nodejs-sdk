@@ -68,7 +68,7 @@ async function initiatePayment(
           last_name: params.lastName
         },
         return_url: params.returnUrl,
-        methods: methods.length > 0 ? methods : undefined
+        methods: methods.length > 0 ? methods : ['mtn_bj']
       })
     });
 
