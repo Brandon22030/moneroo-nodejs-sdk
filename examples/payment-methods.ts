@@ -133,6 +133,7 @@ async function initiateSamplePayment(): Promise<void> {
     const details = PaymentMethodUtils.getDetails(methodCode);
     
     if (!details) {
+      // eslint-disable-next-line no-console
       console.error(`❌ Payment method details not found for: ${methodCode}`);
       return;
     }

@@ -2,34 +2,59 @@ import { PaymentInitParams, PaymentResponse } from './types';
 import { PaymentMethods } from './methods';
 
 /**
- * Initialize a payment with Moneroo and return the payment details
+ * Initialize a payment with Moneroo and return the payment details.
+ * This function creates a new payment transaction and returns a checkout URL
+ * that can be used to redirect the customer to the Moneroo payment page.
  * 
- * @param params - Payment parameters
- * @param secretKey - Moneroo secret API key
- * @param baseUrl - Moneroo API base URL (optional)
- * @returns Created payment details
+ * @param params - Payment parameters including amount, currency, customer details, etc.
+ * @param secretKey - Moneroo secret API key obtained from your Moneroo dashboard
+ * @param baseUrl - Moneroo API base URL (optional, defaults to 'https://api.moneroo.io/v1')
+ * @returns Created payment details including transaction ID and checkout URL
  * 
  * @example
- * // Initialize a payment
+ * // Basic payment initialization
  * const payment = await initiatePayment({
- *   amount: 1000, // 10.00 XOF
+ *   amount: 1000, // 10.00 XOF (amount in cents)
+ *   currency: 'XOF',
+ *   description: 'Payment for order #123',
+ *   email: 'customer@example.com',
+ *   firstName: 'John',
+ *   lastName: 'Doe',
+ *   returnUrl: 'https://example.com/return'
+ * }, 'your_secret_key');
+ * 
+ * console.log('Transaction ID:', payment.data.id);
+ * console.log('Checkout URL:', payment.data.checkout_url);
+ * 
+ * // Redirect the customer to the checkout URL
+ * // window.location.href = payment.data.checkout_url; // In browser context
+ * 
+ * @example
+ * // Specifying a payment method
+ * import { PaymentMethod } from 'moneroo-nodejs-sdk';
+ * 
+ * const payment = await initiatePayment({
+ *   amount: 1000,
  *   currency: 'XOF',
  *   description: 'Payment for order #123',
  *   email: 'customer@example.com',
  *   firstName: 'John',
  *   lastName: 'Doe',
  *   returnUrl: 'https://example.com/return',
- *   paymentMethod: 'mtn_bj' // Utilisation d'une valeur de l'énumération PaymentMethod
+ *   paymentMethod: PaymentMethod.MtnBJ // Utilisation de l'énumération pour MTN Mobile Money au Bénin
  * }, 'your_secret_key');
  * 
  * @example
- * // Utilisation avec une méthode de paiement spécifique via l'énumération
- * import { PaymentMethod } from 'moneroo-nodejs-sdk';
- * 
+ * // Using a custom API base URL (for testing or staging environments)
  * const payment = await initiatePayment({
- *   // ... autres paramètres
- *   paymentMethod: PaymentMethod.MtnBJ // Utilisation de l'énumération
- * }, 'your_secret_key');
+ *   amount: 1000,
+ *   currency: 'XOF',
+ *   description: 'Payment for order #123',
+ *   email: 'customer@example.com',
+ *   firstName: 'John',
+ *   lastName: 'Doe',
+ *   returnUrl: 'https://example.com/return'
+ * }, 'your_secret_key', 'https://staging-api.moneroo.io/v1');
  */
 async function initiatePayment(
   params: PaymentInitParams, 
