@@ -3,16 +3,17 @@
 [![npm version](https://img.shields.io/npm/v/moneroo-nodejs-sdk.svg)](https://www.npmjs.com/package/moneroo-nodejs-sdk)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A lightweight Node.js SDK for integrating with the [Moneroo](https://moneroo.io) payment platform. This SDK allows you to easily initialize payments and check transaction status using the Moneroo API with full TypeScript support.
+A lightweight Node.js SDK for integrating with the [Moneroo](https://moneroo.io) payment platform. This SDK allows you to easily initialize payments, process payouts, and check transaction status using the Moneroo API with full TypeScript support.
 
 ## Features
 
 - Initialize payments with various payment methods
-- Check transaction status
+- Process payouts to mobile money accounts and other destinations
+- Check transaction status for both payments and payouts
 - Lightweight with minimal dependencies
 - Promise-based API with async/await support
 - TypeScript support with type definitions
-- Comprehensive payment method enumeration with filtering capabilities
+- Comprehensive payment and payout method enumerations with filtering capabilities
 - Support for multiple currencies and countries
 ## Installation
 
@@ -34,32 +35,48 @@ npm install moneroo-nodejs-sdk
 
 ```typescript
 import { 
+  // Payment functions
   initiatePayment, 
   checkTransactionStatus, 
   PaymentInitParams, 
   PaymentStatus,
   PaymentMethod,
   PaymentMethodUtils,
-  type PaymentMethodDetails
+  type PaymentMethodDetails,
+  
+  // Payout functions
+  initiatePayout,
+  verifyPayout,
+  getPayout,
+  PayoutInitParams,
+  PayoutMethod,
+  PayoutMethodUtils,
+  type PayoutMethodDetails
 } from 'moneroo-nodejs-sdk';
 ```
 
-### Working with Payment Methods
+### Working with Payment and Payout Methods
 
-The SDK provides a comprehensive `PaymentMethod` enum and utility functions to work with payment methods:
+The SDK provides comprehensive `PaymentMethod` and `PayoutMethod` enums and utility functions to work with payment and payout methods:
 
 ```typescript
 // Get all available payment methods
-const allMethods = PaymentMethodUtils.getAll();
+const allPaymentMethods = PaymentMethodUtils.getAll();
 
-// Get methods available in a specific country (ISO 3166-1 alpha-2)
-const methodsInNigeria = PaymentMethodUtils.getByCountry('NG');
+// Get payment methods available in a specific country (ISO 3166-1 alpha-2)
+const paymentMethodsInNigeria = PaymentMethodUtils.getByCountry('NG');
 
-// Get methods that support a specific currency (ISO 4217)
-const methodsForXOF = PaymentMethodUtils.getByCurrency('XOF');
+// Get payment methods that support a specific currency (ISO 4217)
+const paymentMethodsForXOF = PaymentMethodUtils.getByCurrency('XOF');
 
 // Get details for a specific payment method
-const mtnDetails = PaymentMethodUtils.getDetails(PaymentMethod.MtnBJ);
+const mtnPaymentDetails = PaymentMethodUtils.getDetails(PaymentMethod.MtnBJ);
+
+// Similarly for payout methods
+const allPayoutMethods = PayoutMethodUtils.getAll();
+const payoutMethodsInBenin = PayoutMethodUtils.getByCountry('BJ');
+const payoutMethodsForXOF = PayoutMethodUtils.getByCurrency('XOF');
+const mtnPayoutDetails = PayoutMethodUtils.getDetails(PayoutMethod.MtnBJ);
 ```
 
 ### Initialize a Payment
@@ -147,9 +164,73 @@ try {
 }
 ```
 
-### Payment Methods Guide
+### Initialize a Payout
 
-The SDK provides a comprehensive system for working with payment methods through the `PaymentMethod` enum and `PaymentMethodUtils` helper functions. This allows you to easily select and filter payment methods based on country, currency, or specific requirements.
+```typescript
+// Your Moneroo API key (server-side only)
+const apiKey = 'your_moneroo_api_key';
+
+// Payout parameters with TypeScript type checking
+const payoutParams: PayoutInitParams = {
+  amount: 1000, // Amount in smallest currency unit (e.g., 1000 = 10.00 XOF)
+  currency: 'XOF',
+  description: 'Refund for order #123',
+  customer: {
+    email: 'customer@example.com',
+    first_name: 'John',
+    last_name: 'Doe'
+  },
+  method: PayoutMethod.MtnBJ, // Using PayoutMethod enum for type safety
+  msisdn: '22912345678', // Mobile number for MTN Benin
+  metadata: {
+    order_id: '123',
+    customer_id: '456'
+  }
+};
+
+try {
+  // Initialize payout
+  const result = await initiatePayout(payoutParams, apiKey);
+  console.log('Payout initialized:', result);
+  console.log('Payout ID:', result.data.id);
+} catch (error) {
+  console.error('Payout initialization failed:', error);
+}
+```
+
+### Check Payout Status
+
+```typescript
+// Your Moneroo API key (server-side only)
+const apiKey = 'your_moneroo_api_key';
+const payoutId = 'your_payout_id';
+
+try {
+  // Verify payout status
+  const status = await verifyPayout(payoutId, apiKey);
+  
+  // Check status values
+  if (status.data.status === 'success') {
+    console.log('Payout was successful!');
+  } else if (status.data.status === 'pending') {
+    console.log('Payout is pending...');
+  } else if (status.data.status === 'failed') {
+    console.log('Payout failed.');
+  }
+  
+  console.log('Payout status:', status.data.status);
+  
+  // Get full payout details
+  const details = await getPayout(payoutId, apiKey);
+  console.log('Payout details:', details.data);
+} catch (error) {
+  console.error('Error checking payout status:', error);
+}
+```
+
+### Payment and Payout Methods Guide
+
+The SDK provides a comprehensive system for working with payment and payout methods through the `PaymentMethod`/`PayoutMethod` enums and `PaymentMethodUtils`/`PayoutMethodUtils` helper functions. This allows you to easily select and filter methods based on country, currency, or specific requirements.
 
 #### Using the PaymentMethod Enum
 
